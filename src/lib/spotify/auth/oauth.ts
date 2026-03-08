@@ -24,7 +24,7 @@ function getRedirectUri(): string {
   const uri = import.meta.env.VITE_SPOTIFY_REDIRECT_URI
   if (uri) return uri
   if (typeof window !== "undefined") return `${window.location.origin}/callback`
-  return "http://localhost:3000/callback"
+  return "http://127.0.0.1:3000/callback"
 }
 
 function generateRandomString(length: number): string {
