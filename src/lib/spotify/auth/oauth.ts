@@ -59,7 +59,9 @@ export async function generateCodeChallenge(): Promise<{
 }
 
 /** Redirect the user to Spotify to log in. Call this to start the auth flow. */
-export async function login(scope = "user-read-private user-read-email"): Promise<void> {
+export async function login(
+  scope = "user-read-private user-read-email playlist-read-private",
+): Promise<void> {
   const clientId = getClientId()
   const redirectUri = getRedirectUri()
   const state = generateRandomString(32)
