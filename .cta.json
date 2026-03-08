@@ -1,21 +1,16 @@
 {
-  "projectName": "spotify-stats",
+  "projectName": "start-app",
   "mode": "file-router",
   "typescript": true,
-  "packageManager": "pnpm",
-  "includeExamples": false,
   "tailwind": true,
+  "packageManager": "pnpm",
   "addOnOptions": {},
-  "envVarValues": {},
   "git": true,
-  "routerOnly": false,
   "version": 1,
-  "framework": "react",
+  "framework": "react-cra",
   "chosenAddOns": [
-    "biome",
+    "eslint",
     "nitro",
-    "shadcn",
-    "compiler",
-    "tanstack-query"
+    "start"
   ]
 }
