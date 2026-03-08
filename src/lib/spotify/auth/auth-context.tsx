@@ -1,15 +1,14 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
-  useState
+  useMemo,
 } from "react"
-import type {ReactNode} from "react";
-import type {SpotifyUser} from "@/lib/spotify/api";
-import {  getCurrentUser } from "@/lib/spotify/api"
+import type { ReactNode } from "react"
+import type { SpotifyUser } from "@/lib/spotify/api"
+import { currentUserQueryOptions } from "@/lib/spotify/api"
 import {
-  getAccessToken,
   hasStoredToken,
   login as spotifyLogin,
   logout as spotifyLogout,
@@ -30,33 +29,27 @@ interface AuthContextValue extends AuthState {
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    isLoading: true,
-    isAuthenticated: false,
+  const queryClient = useQueryClient()
+  const hasToken = hasStoredToken()
+  const { data: user, isLoading, isError } = useQuery({
+    ...currentUserQueryOptions,
+    enabled: hasToken,
   })
 
-  const refreshUser = useCallback(async () => {
-    const token = await getAccessToken()
-    if (!token) {
-      setState({ user: null, isLoading: false, isAuthenticated: false })
-      return
-    }
-    try {
-      const user = await getCurrentUser()
-      setState({ user, isLoading: false, isAuthenticated: true })
-    } catch {
-      setState({ user: null, isLoading: false, isAuthenticated: false })
-    }
-  }, [])
+  const state: AuthState = useMemo(
+    () => ({
+      user: hasToken && !isError ? user ?? null : null,
+      isLoading: hasToken && isLoading,
+      isAuthenticated: hasToken && !!user && !isError,
+    }),
+    [hasToken, user, isLoading, isError],
+  )
 
-  useEffect(() => {
-    if (!hasStoredToken()) {
-      setState((s) => ({ ...s, isLoading: false }))
-      return
-    }
-    refreshUser()
-  }, [refreshUser])
+  const refreshUser = useCallback(async () => {
+    await queryClient.invalidateQueries({
+      queryKey: currentUserQueryOptions.queryKey,
+    })
+  }, [queryClient])
 
   const login = useCallback(async () => {
     await spotifyLogin()
@@ -64,8 +57,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     spotifyLogout()
-    setState({ user: null, isLoading: false, isAuthenticated: false })
-  }, [])
+    queryClient.removeQueries({ queryKey: currentUserQueryOptions.queryKey })
+  }, [queryClient])
 
   const value: AuthContextValue = {
     ...state,
