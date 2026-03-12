@@ -7,7 +7,7 @@ import {
 } from "react"
 import { currentUserQueryOptions } from "../api/me/me"
 import type { ReactNode } from "react"
-import type { SpotifyUser } from "@/lib/spotify/api"
+import type { SpotifyUser } from "@/lib/spotify/api/me/me"
 import {
   hasStoredToken,
   login as spotifyLogin,
