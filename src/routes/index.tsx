@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { ContributionEntry } from "@/lib/spotify/services/contribution-service"
 import { contributionDataQueryOptions } from "@/lib/spotify/services/contribution-service"
 import { Button } from "@/components/ui/button"
@@ -37,8 +37,45 @@ function App() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   /** 'rolling' = past 365 days (default); number = calendar year */
   const [view, setView] = useState<"rolling" | number>("rolling")
+  const [targetUserInput, setTargetUserInput] = useState<string>("")
+  const [targetUserId, setTargetUserId] = useState<string>("")
 
-  const userId = user?.id ?? ""
+  // Default to the signed-in user's ID when available
+  useEffect(() => {
+    if (user?.id && !targetUserId) {
+      setTargetUserId(user.id)
+      setTargetUserInput(user.id)
+    }
+  }, [user?.id, targetUserId])
+
+  const normalizeUserInput = (value: string): string => {
+    const trimmed = value.trim()
+    if (!trimmed) return ""
+
+    // Handle open.spotify.com user profile URLs
+    try {
+      if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+        const url = new URL(trimmed)
+        const parts = url.pathname.split("/").filter(Boolean)
+        const userIndex = parts.indexOf("user")
+        if (userIndex !== -1 && parts[userIndex + 1]) {
+          return parts[userIndex + 1]
+        }
+      }
+    } catch {
+      // fall through to other parsing
+    }
+
+    // Handle spotify:user:xyz URIs
+    if (trimmed.startsWith("spotify:user:")) {
+      return trimmed.replace("spotify:user:", "")
+    }
+
+    // Fallback: treat as raw user ID
+    return trimmed
+  }
+
+  const userId = targetUserId || user?.id || ""
   const {
     data: contributionData,
     isLoading,
@@ -69,11 +106,41 @@ function App() {
     <div className="flex min-h-svh flex-col gap-6 p-6">
       <section className="w-full max-w-5xl">
         <div className="mb-3 flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-lg font-semibold">Spotify Contributions</h1>
-            <p className="text-sm text-muted-foreground">
-              Songs you've added to playlists
-            </p>
+          <div className="flex flex-col gap-2">
+            <div>
+              <h1 className="text-lg font-semibold">Spotify Contributions</h1>
+              <p className="text-sm text-muted-foreground">
+                Songs added to playlists by a Spotify user
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <span className="font-medium text-foreground">Viewing user:</span>
+              <input
+                type="text"
+                value={targetUserInput}
+                onChange={(e) => setTargetUserInput(e.target.value)}
+                placeholder={user?.id ? `e.g. ${user.id} or profile URL` : "Spotify user ID or profile URL"}
+                className="h-7 min-w-[220px] rounded border border-input bg-background px-2 text-xs outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              />
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="h-7 px-2 text-xs"
+                onClick={() => {
+                  const normalized = normalizeUserInput(targetUserInput)
+                  setTargetUserId(normalized || (user?.id ?? ""))
+                  setSelectedDate(null)
+                }}
+              >
+                Apply
+              </Button>
+              {userId && (
+                <span className="truncate">
+                  ({userId})
+                </span>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <button

@@ -4,7 +4,7 @@
  */
 
 import { queryOptions } from "@tanstack/react-query"
-import { getCurrentUserPlaylists } from "../api/me/playlists.ts"
+import { getUserPlaylists } from "../api/users/playlists.ts"
 import { getPlaylistItems } from "../api/playlists/items.ts"
 import type { ContributionData } from "@/components/ui/contribution-graph"
 
@@ -66,14 +66,16 @@ async function fetchAllPlaylistItems(playlistId: string) {
   return allItems
 }
 
-/** Fetch all playlists by paginating until next is null. */
-async function fetchAllPlaylists() {
+/**
+ * Fetch all playlists for the given user by paginating until next is null.
+ */
+async function fetchAllPlaylistsForUser(userId: string) {
   const playlists = []
   let offset = 0
   const limit = 50
 
   while (true) {
-    const page = await getCurrentUserPlaylists(limit, offset)
+    const page = await getUserPlaylists(userId, limit, offset)
     playlists.push(...page.items)
     if (page.next === null || playlists.length >= page.total) break
     offset += limit
@@ -83,13 +85,15 @@ async function fetchAllPlaylists() {
 }
 
 /**
- * Fetch all contributions (track adds to playlists) for the current user.
- * Pass the current user's Spotify ID to restrict to items added by this user only.
+ * Fetch all contributions (track adds to playlists) for a given Spotify user.
+ * Pass the target user's Spotify ID to restrict to items added by this user only.
  */
-export async function getContributionData(
-  currentUserId: string,
-): Promise<ContributionResult> {
-  const playlists = await fetchAllPlaylists()
+export async function getContributionData(userId: string): Promise<ContributionResult> {
+  if (!userId) {
+    return { heatmapData: [], byDate: {} }
+  }
+
+  const playlists = await fetchAllPlaylistsForUser(userId)
 
   const byDate: Record<string, Array<ContributionEntry>> = {}
 
@@ -106,7 +110,7 @@ export async function getContributionData(
       for (const item of items) {
         if (!item.added_at) continue
         if (!item.track) continue
-        if (item.added_by && item.added_by.id !== currentUserId) continue
+        if (item.added_by && item.added_by.id !== userId) continue
 
         const track = item.track as {
           id: string
