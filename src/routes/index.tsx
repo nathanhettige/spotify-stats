@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
-import type { SpotifyPlaylistSimplified } from "@/lib/spotify/api"
+import type { SpotifyPlaylistSimplified } from "@/lib/spotify/api/me/playlists"
 import { Button } from "@/components/ui/button"
 import { RequireAuth } from "@/components/require-auth"
 import { useAuth } from "@/lib/spotify/auth/auth-context"
-import { currentUserPlaylistsQueryOptions } from "@/lib/spotify/api"
+import { currentUserPlaylistsQueryOptions } from "@/lib/spotify/api/me/playlists"
 import ContributionGraph from "@/components/ui/contribution-graph"
 
 export const Route = createFileRoute("/")({

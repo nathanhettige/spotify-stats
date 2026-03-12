@@ -5,9 +5,9 @@ import {
   useContext,
   useMemo,
 } from "react"
+import { currentUserQueryOptions } from "../api/me/me"
 import type { ReactNode } from "react"
 import type { SpotifyUser } from "@/lib/spotify/api"
-import { currentUserQueryOptions } from "@/lib/spotify/api"
 import {
   hasStoredToken,
   login as spotifyLogin,
