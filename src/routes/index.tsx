@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/react-query"
 import type { SpotifyPlaylistSimplified } from "@/lib/spotify/api"
 import { Button } from "@/components/ui/button"
 import { RequireAuth } from "@/components/require-auth"
-import { ContributionHeatmap } from "@/components/contribution-heatmap"
 import { useAuth } from "@/lib/spotify/auth/auth-context"
 import { currentUserPlaylistsQueryOptions } from "@/lib/spotify/api"
+import ContributionGraph from "@/components/ui/contribution-graph"
 
 export const Route = createFileRoute("/")({
   component: IndexPage,
@@ -27,6 +27,9 @@ function App() {
 
   return (
     <div className="flex min-h-svh flex-col gap-6 p-6">
+      <section className="w-full max-w-4xl">
+        <ContributionGraph />
+      </section>
       <div className="flex flex-col gap-4 text-sm leading-loose">
         <div>
           <h1 className="font-medium">Spotify Stats</h1>
@@ -72,9 +75,6 @@ function App() {
           )}
         </section>
       </div>
-      <section className="w-full max-w-4xl">
-        <ContributionHeatmap width={896} height={140} />
-      </section>
     </div>
   )
 }
