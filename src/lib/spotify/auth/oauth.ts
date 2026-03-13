@@ -1,6 +1,11 @@
 /**
  * Spotify OAuth 2.0 with PKCE (no client secret).
  * @see https://developer.spotify.com/documentation/web-api/tutorials/code-pkce-flow
+ *
+ * Uses localStorage (not sessionStorage) for PKCE state/verifier and for tokens
+ * so that when login runs in a different window (e.g. Arc opening login in a new
+ * window), the callback can read state/verifier and the original window can see
+ * the tokens via the storage event and shared storage.
  */
 
 const SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
@@ -13,6 +18,9 @@ const STORAGE_KEYS = {
   codeVerifier: "spotify_code_verifier",
   state: "spotify_auth_state",
 } as const
+
+/** Shared across windows so callback and opener both see tokens and PKCE data. */
+const storage = typeof window !== "undefined" ? localStorage : null
 
 function getClientId(): string {
   const id = import.meta.env.VITE_SPOTIFY_CLIENT_ID
@@ -67,9 +75,9 @@ export async function login(
   const state = generateRandomString(32)
   const { codeVerifier, codeChallenge } = await generateCodeChallenge()
 
-  if (typeof window !== "undefined") {
-    sessionStorage.setItem(STORAGE_KEYS.codeVerifier, codeVerifier)
-    sessionStorage.setItem(STORAGE_KEYS.state, state)
+  if (storage) {
+    storage.setItem(STORAGE_KEYS.codeVerifier, codeVerifier)
+    storage.setItem(STORAGE_KEYS.state, state)
   }
 
   const params = new URLSearchParams({
@@ -106,16 +114,13 @@ export async function exchangeCodeForTokens(
   const clientId = getClientId()
   const redirectUri = getRedirectUri()
 
-  if (typeof window !== "undefined") {
-    const savedState = sessionStorage.getItem(STORAGE_KEYS.state)
+  if (storage) {
+    const savedState = storage.getItem(STORAGE_KEYS.state)
     if (savedState !== state) throw new Error("State mismatch")
-    sessionStorage.removeItem(STORAGE_KEYS.state)
+    storage.removeItem(STORAGE_KEYS.state)
   }
 
-  const codeVerifier =
-    typeof window !== "undefined"
-      ? sessionStorage.getItem(STORAGE_KEYS.codeVerifier)
-      : null
+  const codeVerifier = storage?.getItem(STORAGE_KEYS.codeVerifier) ?? null
   if (!codeVerifier) throw new Error("Missing code_verifier")
 
   const res = await fetch(SPOTIFY_TOKEN_URL, {
@@ -137,8 +142,8 @@ export async function exchangeCodeForTokens(
 
   const data = (await res.json()) as TokenResponse
 
-  if (typeof window !== "undefined") {
-    sessionStorage.removeItem(STORAGE_KEYS.codeVerifier)
+  if (storage) {
+    storage.removeItem(STORAGE_KEYS.codeVerifier)
     setStoredTokens(data)
   }
 
@@ -146,12 +151,12 @@ export async function exchangeCodeForTokens(
 }
 
 function setStoredTokens(data: TokenResponse): void {
-  if (typeof window === "undefined") return
+  if (!storage) return
   const expiresAt = Date.now() + data.expires_in * 1000
-  sessionStorage.setItem(STORAGE_KEYS.accessToken, data.access_token)
-  sessionStorage.setItem(STORAGE_KEYS.expiresAt, String(expiresAt))
+  storage.setItem(STORAGE_KEYS.accessToken, data.access_token)
+  storage.setItem(STORAGE_KEYS.expiresAt, String(expiresAt))
   if (data.refresh_token) {
-    sessionStorage.setItem(STORAGE_KEYS.refreshToken, data.refresh_token)
+    storage.setItem(STORAGE_KEYS.refreshToken, data.refresh_token)
   }
 }
 
@@ -160,10 +165,10 @@ function setStoredTokens(data: TokenResponse): void {
  * Returns null if not logged in or refresh fails.
  */
 export async function getAccessToken(): Promise<string | null> {
-  if (typeof window === "undefined") return null
-  const accessToken = sessionStorage.getItem(STORAGE_KEYS.accessToken)
-  const expiresAt = sessionStorage.getItem(STORAGE_KEYS.expiresAt)
-  const refreshToken = sessionStorage.getItem(STORAGE_KEYS.refreshToken)
+  if (!storage) return null
+  const accessToken = storage.getItem(STORAGE_KEYS.accessToken)
+  const expiresAt = storage.getItem(STORAGE_KEYS.expiresAt)
+  const refreshToken = storage.getItem(STORAGE_KEYS.refreshToken)
 
   if (!accessToken) return null
   const expiresAtMs = expiresAt ? Number(expiresAt) : 0
@@ -190,22 +195,22 @@ export async function refreshAccessToken(
   })
   if (!res.ok) return null
   const data = (await res.json()) as TokenResponse
-  if (typeof window !== "undefined") setStoredTokens(data)
+  if (storage) setStoredTokens(data)
   return data
 }
 
 /** Clear stored tokens (log out). */
 export function logout(): void {
-  if (typeof window === "undefined") return
-  sessionStorage.removeItem(STORAGE_KEYS.accessToken)
-  sessionStorage.removeItem(STORAGE_KEYS.refreshToken)
-  sessionStorage.removeItem(STORAGE_KEYS.expiresAt)
-  sessionStorage.removeItem(STORAGE_KEYS.codeVerifier)
-  sessionStorage.removeItem(STORAGE_KEYS.state)
+  if (!storage) return
+  storage.removeItem(STORAGE_KEYS.accessToken)
+  storage.removeItem(STORAGE_KEYS.refreshToken)
+  storage.removeItem(STORAGE_KEYS.expiresAt)
+  storage.removeItem(STORAGE_KEYS.codeVerifier)
+  storage.removeItem(STORAGE_KEYS.state)
 }
 
 /** Whether we have any stored token (may be expired). */
 export function hasStoredToken(): boolean {
-  if (typeof window === "undefined") return false
-  return !!sessionStorage.getItem(STORAGE_KEYS.accessToken)
+  if (!storage) return false
+  return !!storage.getItem(STORAGE_KEYS.accessToken)
 }

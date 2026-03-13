@@ -3,7 +3,9 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useState,
 } from "react"
 import { currentUserQueryOptions } from "../api/me/me"
 import type { ReactNode } from "react"
@@ -13,6 +15,8 @@ import {
   login as spotifyLogin,
   logout as spotifyLogout,
 } from "@/lib/spotify/auth/oauth"
+
+const TOKEN_STORAGE_KEY = "spotify_access_token"
 
 interface AuthState {
   user: SpotifyUser | null
@@ -30,7 +34,17 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient()
+  const [storageVersion, setStorageVersion] = useState(0)
   const hasToken = hasStoredToken()
+
+  useEffect(() => {
+    const handler = (e: StorageEvent) => {
+      if (e.key === TOKEN_STORAGE_KEY) setStorageVersion((v) => v + 1)
+    }
+    window.addEventListener("storage", handler)
+    return () => window.removeEventListener("storage", handler)
+  }, [])
+
   const { data: user, isLoading, isError } = useQuery({
     ...currentUserQueryOptions,
     enabled: hasToken,
@@ -42,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading: hasToken && isLoading,
       isAuthenticated: hasToken && !!user && !isError,
     }),
-    [hasToken, user, isLoading, isError],
+    [hasToken, user, isLoading, isError, storageVersion],
   )
 
   const refreshUser = useCallback(async () => {
