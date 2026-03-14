@@ -18,7 +18,7 @@ export function ProfileHeader({ followers, name, imageUrl, profileUrl }: Profile
 
   return (
     <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-6">
-      <Avatar className="h-24 w-24 border-2 border-primary sm:h-32 sm:w-32">
+      <Avatar className="h-24 w-24 border-2 border-secondary sm:h-32 sm:w-32">
         <AvatarImage src={imageUrl} alt={name} />
         <AvatarFallback className="bg-secondary text-2xl">
           {initials}
@@ -38,11 +38,7 @@ export function ProfileHeader({ followers, name, imageUrl, profileUrl }: Profile
         </div>
 
         <Button variant="outline" size="sm" className="mt-2 gap-2" asChild>
-          <a
-            href={profileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={profileUrl} target="_blank" rel="noopener noreferrer">
             <ExternalLink className="h-4 w-4" />
             Open in Spotify
           </a>
