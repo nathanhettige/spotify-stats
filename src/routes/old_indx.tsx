@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import type { ContributionEntry } from "@/lib/spotify/services/contribution-service"
 import { contributionDataQueryOptions } from "@/lib/spotify/services/contribution-service"
 import { Button } from "@/components/ui/button"
-import { RequireAuth } from "@/components/require-auth"
+import { RequireAuth } from "@/lib/spotify/auth/require-auth"
 import { useAuth } from "@/lib/spotify/auth/auth-context"
 import ContributionGraph from "@/components/ui/contribution-graph"
 

@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
-import { RequireAuth } from "@/components/require-auth"
-import Header from "@/features/header"
-import Footer from "@/features/footer"
-import { ProfileHeader } from "@/features/profile-header"
+import { RequireAuth } from "@/lib/spotify/auth/require-auth"
+import Header from "@/components/header"
+import Footer from "@/components/footer"
+import { ProfileHeader } from "@/components/profile-header"
 import meQueryOptions from "@/lib/spotify/api/me/me"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
