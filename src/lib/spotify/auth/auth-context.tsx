@@ -7,7 +7,7 @@ import {
   useMemo,
   useState,
 } from "react"
-import { currentUserQueryOptions } from "../api/me/me"
+import { meQueryOptions } from "../api/me/me"
 import type { ReactNode } from "react"
 import type { SpotifyUser } from "@/lib/spotify/api/me/me"
 import {
@@ -45,8 +45,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("storage", handler)
   }, [])
 
-  const { data: user, isLoading, isError } = useQuery({
-    ...currentUserQueryOptions,
+  const {
+    data: user,
+    isLoading,
+    isError,
+  } = useQuery({
+    ...meQueryOptions,
     enabled: hasToken,
   })
 
@@ -61,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshUser = useCallback(async () => {
     await queryClient.invalidateQueries({
-      queryKey: currentUserQueryOptions.queryKey,
+      queryKey: meQueryOptions.queryKey,
     })
   }, [queryClient])
 
@@ -71,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     spotifyLogout()
-    queryClient.removeQueries({ queryKey: currentUserQueryOptions.queryKey })
+    queryClient.removeQueries({ queryKey: meQueryOptions.queryKey })
   }, [queryClient])
 
   const value: AuthContextValue = {
