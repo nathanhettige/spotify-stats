@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { UserSearch } from "@/components/user-search"
 import { PlaylistsTab } from "@/components/playlists-tab"
 import { TopArtistsTab } from "@/components/top-artists-tab"
+import { TopTracksTab } from "@/components/top-tracks-tab"
 
 export const Route = createFileRoute("/")({
   component: IndexPage,
@@ -90,7 +91,7 @@ function App() {
 
               {!selectedUserId && (
                 <TabsContent value="top-tracks">
-                  <div>Top Tracks</div>
+                  <TopTracksTab />
                 </TabsContent>
               )}
             </Tabs>
