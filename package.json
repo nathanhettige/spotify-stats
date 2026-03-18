@@ -5,11 +5,13 @@
   "scripts": {
     "dev": "vite dev --port 3000 --host 127.0.0.1",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "pnpm run build && wrangler dev",
     "test": "vitest run",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "deploy": "pnpm run build && wrangler deploy",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",
@@ -42,6 +44,7 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.29.1",
     "@tanstack/devtools-vite": "^0.3.11",
     "@tanstack/eslint-config": "^0.3.0",
     "@testing-library/dom": "^10.4.0",
@@ -56,6 +59,7 @@
     "typescript": "^5.7.2",
     "vite": "^7.1.7",
     "vitest": "^3.0.5",
-    "web-vitals": "^5.1.0"
+    "web-vitals": "^5.1.0",
+    "wrangler": "^4.75.0"
   }
 }
