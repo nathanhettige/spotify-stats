@@ -70,7 +70,7 @@ function App() {
 
             <Tabs>
               <TabsList className="w-full">
-                <TabsTrigger value="playlists">Playlists</TabsTrigger>
+                <TabsTrigger value="playlists">Playlists test</TabsTrigger>
                 <TabsTrigger value="top-artists">Top Artists</TabsTrigger>
                 <TabsTrigger value="top-tracks">Top Tracks</TabsTrigger>
               </TabsList>
