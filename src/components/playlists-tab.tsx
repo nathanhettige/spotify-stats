@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { Music2, Pin } from "lucide-react"
+import { Music2, Pin, Users } from "lucide-react"
 import type {EnrichedPlaylist} from "@/lib/spotify/services/playlist-service";
 import {  ownedPlaylistsQueryOptions } from "@/lib/spotify/services/playlist-service"
 
@@ -106,9 +106,16 @@ function PlaylistCard({ playlist, isPinned }: PlaylistCardProps) {
             <Pin className="h-3.5 w-3.5 shrink-0 fill-current text-green-400" />
           )}
         </div>
-        <p className="text-sm text-muted-foreground">
-          {playlist.followers.toLocaleString()} followers · {playlist.tracks.total.toLocaleString()} tracks
-        </p>
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          {playlist.followers > 0 && (
+            <>
+              <Users className="h-3.5 w-3.5" />
+              <span>{playlist.followers.toLocaleString()}</span>
+              <span>·</span>
+            </>
+          )}
+          <span>{playlist.tracks.total.toLocaleString()} tracks</span>
+        </div>
       </div>
     </a>
   )
