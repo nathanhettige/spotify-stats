@@ -4,9 +4,10 @@
  */
 
 import { queryOptions } from "@tanstack/react-query"
-import { getUserPlaylists } from "../api/users/playlists.ts"
 import { getPlaylistItems } from "../api/playlists/items.ts"
+import { userPlaylistsQueryOptions } from "../api/users/playlists.ts"
 import type { ContributionData } from "@/components/ui/contribution-graph"
+import { getContext } from "@/integrations/tanstack-query/root-provider"
 
 export interface ContributionEntry {
   /** ISO date-time string from added_at */
@@ -55,12 +56,13 @@ async function fetchAllPlaylistItems(playlistId: string) {
   const allItems = []
   let offset = 0
   const limit = 50
+  let hasMore = true
 
-  while (true) {
+  while (hasMore) {
     const page = await getPlaylistItems(playlistId, limit, offset)
     allItems.push(...page.items)
-    if (page.next === null || allItems.length >= page.total) break
-    offset += limit
+    hasMore = page.next !== null && allItems.length < page.total
+    if (hasMore) offset += limit
   }
 
   return allItems
@@ -70,15 +72,19 @@ async function fetchAllPlaylistItems(playlistId: string) {
  * Fetch all playlists for the given user by paginating until next is null.
  */
 async function fetchAllPlaylistsForUser(userId: string) {
+  const { queryClient } = getContext()
   const playlists = []
   let offset = 0
   const limit = 50
+  let hasMore = true
 
-  while (true) {
-    const page = await getUserPlaylists(userId, limit, offset)
+  while (hasMore) {
+    const page = await queryClient.fetchQuery(
+      userPlaylistsQueryOptions(userId, limit, offset),
+    )
     playlists.push(...page.items)
-    if (page.next === null || playlists.length >= page.total) break
-    offset += limit
+    hasMore = page.next !== null && playlists.length < page.total
+    if (hasMore) offset += limit
   }
 
   return playlists
@@ -110,7 +116,7 @@ export async function getContributionData(userId: string): Promise<ContributionR
       for (const item of items) {
         if (!item.added_at) continue
         if (!item.track) continue
-        if (item.added_by && item.added_by.id !== userId) continue
+        if (item.added_by?.id !== userId) continue
 
         const track = item.track as {
           id: string
@@ -134,8 +140,7 @@ export async function getContributionData(userId: string): Promise<ContributionR
           playlistName: playlist.name,
         }
 
-        if (!byDate[dateKey]) byDate[dateKey] = []
-        byDate[dateKey].push(entry)
+        ;(byDate[dateKey] ??= []).push(entry)
       }
     }),
   )

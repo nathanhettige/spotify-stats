@@ -8,13 +8,13 @@ import { spotifyFetch } from "../index.api.ts"
 import type { SpotifyUserPlaylistsResponse } from "../me/playlists.ts"
 
 /** Get playlists owned or followed by the given user. */
-export function getUserPlaylists(
+function fetchUserPlaylists(
   userId: string,
   limit = 50,
-  offset = 0,
+  offset = 0
 ): Promise<SpotifyUserPlaylistsResponse> {
   return spotifyFetch<SpotifyUserPlaylistsResponse>(
-    `/users/${encodeURIComponent(userId)}/playlists?limit=${limit}&offset=${offset}`,
+    `/users/${encodeURIComponent(userId)}/playlists?limit=${limit}&offset=${offset}`
   )
 }
 
@@ -22,11 +22,11 @@ export function getUserPlaylists(
 export const userPlaylistsQueryOptions = (
   userId: string,
   limit = 50,
-  offset = 0,
+  offset = 0
 ) =>
   queryOptions({
     queryKey: ["spotify", "users", userId, "playlists", limit, offset] as const,
-    queryFn: () => getUserPlaylists(userId, limit, offset),
+    queryFn: () => fetchUserPlaylists(userId, limit, offset),
     enabled: !!userId,
   })
 

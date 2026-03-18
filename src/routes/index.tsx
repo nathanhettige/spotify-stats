@@ -8,6 +8,7 @@ import meQueryOptions from "@/lib/spotify/api/me/me"
 import { userQueryOptions } from "@/lib/spotify/api/users/user"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { UserSearch } from "@/components/user-search"
+import { PlaylistsTab } from "@/components/playlists-tab"
 
 export const Route = createFileRoute("/")({
   component: IndexPage,
@@ -68,15 +69,15 @@ function App() {
               profileUrl={user.external_urls.spotify}
             />
 
-            <Tabs>
+            <Tabs defaultValue="playlists">
               <TabsList className="w-full">
-                <TabsTrigger value="playlists">Playlists test</TabsTrigger>
+                <TabsTrigger value="playlists">Playlists</TabsTrigger>
                 <TabsTrigger value="top-artists">Top Artists</TabsTrigger>
                 <TabsTrigger value="top-tracks">Top Tracks</TabsTrigger>
               </TabsList>
 
               <TabsContent value="playlists">
-                <div>Playlists</div>
+                <PlaylistsTab userId={user.id} />
               </TabsContent>
 
               <TabsContent value="top-artists">
