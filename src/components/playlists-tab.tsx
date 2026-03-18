@@ -58,7 +58,7 @@ export function PlaylistsTab({ userId }: PlaylistsTabProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       {sorted.map((playlist) => (
         <PlaylistCard
           key={playlist.id}
@@ -83,33 +83,36 @@ function PlaylistCard({ playlist, isPinned }: PlaylistCardProps) {
       href={playlist.external_urls.spotify}
       target="_blank"
       rel="noreferrer"
-      className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:bg-muted/40"
+      className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-colors hover:bg-muted/40"
     >
-      <div className="h-14 w-14 shrink-0 overflow-hidden rounded">
+      <div className="aspect-square w-full overflow-hidden">
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={playlist.name}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-muted">
-            <Music2 className="h-5 w-5 text-muted-foreground" />
+            <Music2 className="h-8 w-8 text-muted-foreground" />
           </div>
         )}
       </div>
 
-      <div className="min-w-0 flex-1">
+      <div className="flex flex-1 flex-col gap-1.5 p-3">
         <div className="flex items-center gap-1.5">
           <span className="truncate font-semibold">{playlist.name}</span>
           {isPinned && (
             <Pin className="h-3.5 w-3.5 shrink-0 fill-current text-green-400" />
           )}
         </div>
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        {playlist.description && (
+          <p className="line-clamp-2 text-xs text-muted-foreground">{playlist.description}</p>
+        )}
+        <div className="mt-auto flex items-center gap-1.5 text-xs text-muted-foreground">
           {playlist.followers > 0 && (
             <>
-              <Users className="h-3.5 w-3.5" />
+              <Users className="h-3 w-3" />
               <span>{playlist.followers.toLocaleString()}</span>
               <span>·</span>
             </>
