@@ -9,6 +9,7 @@ import { userQueryOptions } from "@/lib/spotify/api/users/user"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { UserSearch } from "@/components/user-search"
 import { PlaylistsTab } from "@/components/playlists-tab"
+import { ListMusic, Mic2, Music } from "lucide-react"
 
 export const Route = createFileRoute("/")({
   component: IndexPage,
@@ -71,9 +72,9 @@ function App() {
 
             <Tabs defaultValue="playlists">
               <TabsList className="w-full">
-                <TabsTrigger value="playlists">Playlists</TabsTrigger>
-                <TabsTrigger value="top-artists">Top Artists</TabsTrigger>
-                <TabsTrigger value="top-tracks">Top Tracks</TabsTrigger>
+                <TabsTrigger value="playlists"><ListMusic />Playlists</TabsTrigger>
+                <TabsTrigger value="top-artists"><Mic2 />Top Artists</TabsTrigger>
+                <TabsTrigger value="top-tracks"><Music />Top Tracks</TabsTrigger>
               </TabsList>
 
               <TabsContent value="playlists">
