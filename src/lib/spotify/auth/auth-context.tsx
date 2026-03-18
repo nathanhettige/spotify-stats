@@ -76,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     spotifyLogout()
     queryClient.removeQueries({ queryKey: meQueryOptions.queryKey })
+    setStorageVersion((v) => v + 1)
   }, [queryClient])
 
   const value: AuthContextValue = {
