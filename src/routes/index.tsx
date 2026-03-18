@@ -76,7 +76,7 @@ function App() {
               </TabsList>
 
               <TabsContent value="playlists">
-                <div>Stats</div>
+                <div>Playlists</div>
               </TabsContent>
 
               <TabsContent value="top-artists">
