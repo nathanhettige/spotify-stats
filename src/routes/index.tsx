@@ -74,21 +74,25 @@ function App() {
             <Tabs defaultValue="playlists">
               <TabsList className="w-full">
                 <TabsTrigger value="playlists"><ListMusic />Playlists</TabsTrigger>
-                <TabsTrigger value="top-artists"><Mic2 />Top Artists</TabsTrigger>
-                <TabsTrigger value="top-tracks"><Music />Top Tracks</TabsTrigger>
+                {!selectedUserId && <TabsTrigger value="top-artists"><Mic2 />Top Artists</TabsTrigger>}
+                {!selectedUserId && <TabsTrigger value="top-tracks"><Music />Top Tracks</TabsTrigger>}
               </TabsList>
 
               <TabsContent value="playlists">
                 <PlaylistsTab userId={user.id} />
               </TabsContent>
 
-              <TabsContent value="top-artists">
-                <TopArtistsTab />
-              </TabsContent>
+              {!selectedUserId && (
+                <TabsContent value="top-artists">
+                  <TopArtistsTab />
+                </TabsContent>
+              )}
 
-              <TabsContent value="top-tracks">
-                <div>Top Tracks</div>
-              </TabsContent>
+              {!selectedUserId && (
+                <TabsContent value="top-tracks">
+                  <div>Top Tracks</div>
+                </TabsContent>
+              )}
             </Tabs>
           </>
         )}
