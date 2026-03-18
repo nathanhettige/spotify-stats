@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
+import { ListMusic, Mic2, Music } from "lucide-react"
 import { RequireAuth } from "@/lib/spotify/auth/require-auth"
 import Footer from "@/components/footer"
 import { ProfileHeader } from "@/components/profile-header"
@@ -9,7 +10,7 @@ import { userQueryOptions } from "@/lib/spotify/api/users/user"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { UserSearch } from "@/components/user-search"
 import { PlaylistsTab } from "@/components/playlists-tab"
-import { ListMusic, Mic2, Music } from "lucide-react"
+import { TopArtistsTab } from "@/components/top-artists-tab"
 
 export const Route = createFileRoute("/")({
   component: IndexPage,
@@ -82,7 +83,7 @@ function App() {
               </TabsContent>
 
               <TabsContent value="top-artists">
-                <div>Top Artists</div>
+                <TopArtistsTab />
               </TabsContent>
 
               <TabsContent value="top-tracks">
