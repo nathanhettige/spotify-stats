@@ -1,5 +1,7 @@
+import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Music2, Pin, Users } from "lucide-react"
+import { ShowAllButton } from "@/components/show-all-button"
 import type {EnrichedPlaylist} from "@/lib/spotify/services/playlist-service";
 import {  ownedPlaylistsQueryOptions } from "@/lib/spotify/services/playlist-service"
 
@@ -18,10 +20,13 @@ interface PlaylistsTabProps {
   userId: string
 }
 
+const INITIAL_COUNT = 6
+
 export function PlaylistsTab({ userId }: PlaylistsTabProps) {
   const { data: playlists, isLoading, error } = useQuery(
     ownedPlaylistsQueryOptions(userId),
   )
+  const [expanded, setExpanded] = useState(false)
 
   const pinnedIds = getPinnedIds()
 
@@ -57,15 +62,23 @@ export function PlaylistsTab({ userId }: PlaylistsTabProps) {
     )
   }
 
+  const visible = expanded ? sorted : sorted.slice(0, INITIAL_COUNT)
+  const remaining = sorted.length - INITIAL_COUNT
+
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-      {sorted.map((playlist) => (
-        <PlaylistCard
-          key={playlist.id}
-          playlist={playlist}
-          isPinned={pinnedIds.has(playlist.id)}
-        />
-      ))}
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {visible.map((playlist) => (
+          <PlaylistCard
+            key={playlist.id}
+            playlist={playlist}
+            isPinned={pinnedIds.has(playlist.id)}
+          />
+        ))}
+      </div>
+      {sorted.length > INITIAL_COUNT && (
+        <ShowAllButton expanded={expanded} remaining={remaining} onToggle={() => setExpanded(!expanded)} />
+      )}
     </div>
   )
 }

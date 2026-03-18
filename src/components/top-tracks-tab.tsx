@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query"
 import { Music2 } from "lucide-react"
 import type { TimeRange } from "@/lib/spotify/api/me/top-artists"
 import { topTracksQueryOptions } from "@/lib/spotify/api/me/top-tracks"
-import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { ShowAllButton } from "@/components/show-all-button"
 
 const TIME_RANGES: Array<{ value: TimeRange; label: string }> = [
   { value: "short_term", label: "Last 4 weeks" },
@@ -11,26 +12,31 @@ const TIME_RANGES: Array<{ value: TimeRange; label: string }> = [
   { value: "long_term", label: "All time" },
 ]
 
+const INITIAL_COUNT = 9
+
 export function TopTracksTab() {
   const [timeRange, setTimeRange] = useState<TimeRange>("medium_term")
+  const [expanded, setExpanded] = useState(false)
   const { data, isLoading, error } = useQuery(topTracksQueryOptions(timeRange))
+
+  function handleTimeRangeChange(range: TimeRange) {
+    setTimeRange(range)
+    setExpanded(false)
+  }
 
   return (
     <div className="space-y-4">
       <div className="flex gap-2">
         {TIME_RANGES.map((range) => (
-          <button
+          <Button
             key={range.value}
-            onClick={() => setTimeRange(range.value)}
-            className={cn(
-              "rounded-xl px-3 py-1.5 text-sm font-medium transition-colors",
-              timeRange === range.value
-                ? "bg-[#1DB954] text-black"
-                : "text-muted-foreground hover:text-foreground",
-            )}
+            variant={timeRange === range.value ? "default" : "ghost"}
+            size="sm"
+            onClick={() => handleTimeRangeChange(range.value)}
+            className={timeRange === range.value ? "bg-[#1DB954] text-black hover:bg-[#1DB954]/90" : ""}
           >
             {range.label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -53,8 +59,9 @@ export function TopTracksTab() {
       )}
 
       {data && data.items.length > 0 && (
+        <div className="space-y-3">
         <div className="grid grid-cols-3 gap-3 md:grid-cols-5 lg:grid-cols-7">
-          {data.items.map((track, index) => {
+          {(expanded ? data.items : data.items.slice(0, INITIAL_COUNT)).map((track, index) => {
             const imageUrl = track.album.images[0]?.url
             const artists = track.artists.map((a) => a.name).join(", ")
             return (
@@ -87,6 +94,10 @@ export function TopTracksTab() {
               </a>
             )
           })}
+        </div>
+        {data.items.length > INITIAL_COUNT && (
+          <ShowAllButton expanded={expanded} remaining={data.items.length - INITIAL_COUNT} onToggle={() => setExpanded(!expanded)} />
+        )}
         </div>
       )}
     </div>
