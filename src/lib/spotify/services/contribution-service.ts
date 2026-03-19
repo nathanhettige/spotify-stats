@@ -20,6 +20,7 @@ export interface ContributionEntry {
   albumImageUrl: string | null
   playlistId: string
   playlistName: string
+  playlistUrl: string
 }
 
 export interface ContributionResult {
@@ -157,6 +158,7 @@ export async function getContributionData(
           albumImageUrl: track.album?.images?.[0]?.url ?? null,
           playlistId: playlist.id,
           playlistName: playlist.name,
+          playlistUrl: playlist.external_urls.spotify,
         }
 
         ;(byDate[dateKey] ??= []).push(entry)
