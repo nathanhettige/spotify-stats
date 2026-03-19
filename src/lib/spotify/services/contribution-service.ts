@@ -110,7 +110,9 @@ export async function getContributionData(
     return { heatmapData: [], byDate: {} }
   }
 
-  const playlists = await fetchAllPlaylistsForUser(userId)
+  const allPlaylists = await fetchAllPlaylistsForUser(userId)
+  // Only scan playlists the user owns (not ones they merely follow)
+  const playlists = allPlaylists.filter((p) => p.owner.id === userId)
 
   const byDate: Record<string, Array<ContributionEntry>> = {}
   let loaded = 0

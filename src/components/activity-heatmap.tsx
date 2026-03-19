@@ -188,15 +188,6 @@ export function ActivityHeatmap({
 
     return (
       <div className="overflow-hidden rounded-lg border border-border bg-card p-4">
-        {/* Header skeleton */}
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex flex-col gap-1.5">
-            <Skeleton className="h-5 w-48" />
-            <Skeleton className="h-4 w-32" />
-          </div>
-          <Skeleton className="h-8 w-48" />
-        </div>
-
         {loadingProgress ? (
           <div className="space-y-3 py-2">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">

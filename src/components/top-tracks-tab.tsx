@@ -15,7 +15,7 @@ const TIME_RANGES: Array<{ value: TimeRange; label: string }> = [
 const INITIAL_COUNT = 9
 
 export function TopTracksTab() {
-  const [timeRange, setTimeRange] = useState<TimeRange>("medium_term")
+  const [timeRange, setTimeRange] = useState<TimeRange>("short_term")
   const [expanded, setExpanded] = useState(false)
   const { data, isLoading, error } = useQuery(topTracksQueryOptions(timeRange))
 
@@ -33,7 +33,11 @@ export function TopTracksTab() {
             variant={timeRange === range.value ? "default" : "ghost"}
             size="sm"
             onClick={() => handleTimeRangeChange(range.value)}
-            className={timeRange === range.value ? "bg-[#1DB954] text-black hover:bg-[#1DB954]/90" : ""}
+            className={
+              timeRange === range.value
+                ? "bg-[#1DB954] text-black hover:bg-[#1DB954]/90"
+                : ""
+            }
           >
             {range.label}
           </Button>
@@ -60,44 +64,56 @@ export function TopTracksTab() {
 
       {data && data.items.length > 0 && (
         <div className="space-y-3">
-        <div className="grid grid-cols-3 gap-3 md:grid-cols-5 lg:grid-cols-7">
-          {(expanded ? data.items : data.items.slice(0, INITIAL_COUNT)).map((track, index) => {
-            const imageUrl = track.album.images[0]?.url
-            const artists = track.artists.map((a) => a.name).join(", ")
-            return (
-              <a
-                key={track.id}
-                href={track.external_urls.spotify}
-                target="_blank"
-                rel="noreferrer"
-                className="flex flex-col items-center gap-2 rounded-lg p-2 transition-colors hover:bg-muted/40"
-              >
-                <div className="aspect-square w-full overflow-hidden rounded">
-                  {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      alt={track.album.name}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-muted">
-                      <Music2 className="h-5 w-5 text-muted-foreground" />
+          <div className="grid grid-cols-3 gap-3 md:grid-cols-5 lg:grid-cols-7">
+            {(expanded ? data.items : data.items.slice(0, INITIAL_COUNT)).map(
+              (track, index) => {
+                const imageUrl = track.album.images[0]?.url
+                const artists = track.artists.map((a) => a.name).join(", ")
+                return (
+                  <a
+                    key={track.id}
+                    href={track.external_urls.spotify}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex flex-col items-center gap-2 rounded-lg p-2 transition-colors hover:bg-muted/40"
+                  >
+                    <div className="aspect-square w-full overflow-hidden rounded">
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={track.album.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-muted">
+                          <Music2 className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className="w-full">
-                  <p className="w-full truncate text-center text-xs font-medium">
-                    <span className="text-muted-foreground">{index + 1}<span className="text-[0.8em]">.</span> </span>{track.name}
-                  </p>
-                  <p className="truncate text-center text-xs text-muted-foreground">{artists}</p>
-                </div>
-              </a>
-            )
-          })}
-        </div>
-        {data.items.length > INITIAL_COUNT && (
-          <ShowAllButton expanded={expanded} remaining={data.items.length - INITIAL_COUNT} onToggle={() => setExpanded(!expanded)} />
-        )}
+                    <div className="w-full">
+                      <p className="w-full truncate text-center text-xs font-medium">
+                        <span className="text-muted-foreground">
+                          {index + 1}
+                          <span className="text-[0.8em]">.</span>{" "}
+                        </span>
+                        {track.name}
+                      </p>
+                      <p className="truncate text-center text-xs text-muted-foreground">
+                        {artists}
+                      </p>
+                    </div>
+                  </a>
+                )
+              }
+            )}
+          </div>
+          {data.items.length > INITIAL_COUNT && (
+            <ShowAllButton
+              expanded={expanded}
+              remaining={data.items.length - INITIAL_COUNT}
+              onToggle={() => setExpanded(!expanded)}
+            />
+          )}
         </div>
       )}
     </div>

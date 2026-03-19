@@ -3,7 +3,7 @@ import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { ChevronDown, ChevronUp, ListMusic, Mic2, Music, X } from "lucide-react"
 import type { ContributionEntry } from "@/lib/spotify/services/contribution-service"
-import type {HeatmapView} from "@/components/activity-heatmap";
+import type { HeatmapView } from "@/components/activity-heatmap"
 import { RequireAuth } from "@/lib/spotify/auth/require-auth"
 import Footer from "@/components/footer"
 import { ProfileHeader } from "@/components/profile-header"
@@ -14,10 +14,7 @@ import { UserSearch } from "@/components/user-search"
 import { PlaylistsTab } from "@/components/playlists-tab"
 import { TopArtistsTab } from "@/components/top-artists-tab"
 import { TopTracksTab } from "@/components/top-tracks-tab"
-import {
-  ActivityHeatmap
-
-} from "@/components/activity-heatmap"
+import { ActivityHeatmap } from "@/components/activity-heatmap"
 import { useContributionData } from "@/lib/spotify/hooks/use-contribution-data"
 
 export const Route = createFileRoute("/")({
@@ -123,31 +120,6 @@ function App() {
               profileUrl={user.external_urls.spotify}
             />
 
-            <ActivityHeatmap
-              activityData={byDate}
-              view={heatmapView}
-              onViewChange={(v) => {
-                setHeatmapView(v)
-                selectDate(null)
-              }}
-              onDayClick={(date) => selectDate(date)}
-              selectedDate={selectedDate}
-              isLoading={isLoadingContributions}
-              loadingProgress={loadingProgress}
-              detailPanel={
-                selectedDate ? (
-                  <DayDetail
-                    selectedDate={selectedDate}
-                    selectedContributions={selectedContributions}
-                    contributionsByPlaylist={contributionsByPlaylist}
-                    expandedPlaylists={expandedPlaylists}
-                    onTogglePlaylist={togglePlaylist}
-                    onDismiss={() => selectDate(null)}
-                  />
-                ) : undefined
-              }
-            />
-
             <Tabs defaultValue="playlists">
               <TabsList className="w-full">
                 <TabsTrigger value="playlists">
@@ -184,6 +156,31 @@ function App() {
                 </TabsContent>
               )}
             </Tabs>
+
+            <ActivityHeatmap
+              activityData={byDate}
+              view={heatmapView}
+              onViewChange={(v) => {
+                setHeatmapView(v)
+                selectDate(null)
+              }}
+              onDayClick={(date) => selectDate(date)}
+              selectedDate={selectedDate}
+              isLoading={isLoadingContributions}
+              loadingProgress={loadingProgress}
+              detailPanel={
+                selectedDate ? (
+                  <DayDetail
+                    selectedDate={selectedDate}
+                    selectedContributions={selectedContributions}
+                    contributionsByPlaylist={contributionsByPlaylist}
+                    expandedPlaylists={expandedPlaylists}
+                    onTogglePlaylist={togglePlaylist}
+                    onDismiss={() => selectDate(null)}
+                  />
+                ) : undefined
+              }
+            />
           </>
         )}
       </main>
