@@ -29,6 +29,12 @@ export interface ContributionResult {
   byDate: Record<string, Array<ContributionEntry>>
 }
 
+export interface LoadingProgress {
+  loaded: number
+  total: number
+  currentPlaylist: string
+}
+
 /** Normalize an ISO date-time to a YYYY-MM-DD date key in local timezone. */
 function toDateKey(isoString: string): string {
   // Parse the ISO string and use local date to match what the graph shows
@@ -80,7 +86,7 @@ async function fetchAllPlaylistsForUser(userId: string) {
 
   while (hasMore) {
     const page = await queryClient.fetchQuery(
-      userPlaylistsQueryOptions(userId, limit, offset),
+      userPlaylistsQueryOptions(userId, limit, offset)
     )
     playlists.push(...page.items)
     hasMore = page.next !== null && playlists.length < page.total
@@ -93,8 +99,13 @@ async function fetchAllPlaylistsForUser(userId: string) {
 /**
  * Fetch all contributions (track adds to playlists) for a given Spotify user.
  * Pass the target user's Spotify ID to restrict to items added by this user only.
+ * Optionally provide `onProgress` to receive incremental loading updates as each
+ * playlist is scanned.
  */
-export async function getContributionData(userId: string): Promise<ContributionResult> {
+export async function getContributionData(
+  userId: string,
+  onProgress?: (progress: LoadingProgress) => void
+): Promise<ContributionResult> {
   if (!userId) {
     return { heatmapData: [], byDate: {} }
   }
@@ -102,14 +113,20 @@ export async function getContributionData(userId: string): Promise<ContributionR
   const playlists = await fetchAllPlaylistsForUser(userId)
 
   const byDate: Record<string, Array<ContributionEntry>> = {}
+  let loaded = 0
+  const total = playlists.length
 
   await Promise.allSettled(
     playlists.map(async (playlist) => {
+      onProgress?.({ loaded, total, currentPlaylist: playlist.name })
+
       let items
       try {
         items = await fetchAllPlaylistItems(playlist.id)
       } catch {
         // Skip playlists we can't read (e.g. 403 on private ones)
+        loaded++
+        onProgress?.({ loaded, total, currentPlaylist: playlist.name })
         return
       }
 
@@ -142,7 +159,10 @@ export async function getContributionData(userId: string): Promise<ContributionR
 
         ;(byDate[dateKey] ??= []).push(entry)
       }
-    }),
+
+      loaded++
+      onProgress?.({ loaded, total, currentPlaylist: playlist.name })
+    })
   )
 
   // Build heatmap array – only include days that have contributions
@@ -151,13 +171,13 @@ export async function getContributionData(userId: string): Promise<ContributionR
       date,
       count: entries.length,
       level: countToLevel(entries.length),
-    }),
+    })
   )
 
   return { heatmapData, byDate }
 }
 
-/** TanStack Query options for contribution data. */
+/** TanStack Query options for contribution data (no progress tracking). */
 export const contributionDataQueryOptions = (currentUserId: string) =>
   queryOptions({
     queryKey: ["spotify", "contributions", currentUserId] as const,
