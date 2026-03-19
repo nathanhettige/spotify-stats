@@ -240,6 +240,7 @@ function DayDetail({
                 <PlaylistGroup
                   key={playlistName}
                   playlistName={playlistName}
+                  playlistUrl={entries[0].playlistUrl}
                   entries={entries}
                   expanded={expandedPlaylists.has(playlistName)}
                   onToggle={() => onTogglePlaylist(playlistName)}
@@ -271,6 +272,7 @@ function DateHeading({ dateStr }: { dateStr: string }) {
 
 interface PlaylistGroupProps {
   playlistName: string
+  playlistUrl: string
   entries: Array<ContributionEntry>
   expanded: boolean
   onToggle: () => void
@@ -278,6 +280,7 @@ interface PlaylistGroupProps {
 
 function PlaylistGroup({
   playlistName,
+  playlistUrl,
   entries,
   expanded,
   onToggle,
@@ -297,7 +300,14 @@ function PlaylistGroup({
       <div>
         <p className="mb-2 text-sm leading-snug font-semibold">
           Added {entries.length} {entries.length === 1 ? "track" : "tracks"} to{" "}
-          <span className="font-medium text-foreground">{playlistName}</span>
+          <a
+            href={playlistUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-foreground underline-offset-2 hover:underline"
+          >
+            {playlistName}
+          </a>
         </p>
 
         <div className="overflow-hidden rounded-md border border-border">
