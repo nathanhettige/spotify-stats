@@ -32,7 +32,7 @@ function getRedirectUri(): string {
   const uri = import.meta.env.VITE_SPOTIFY_REDIRECT_URI
   if (uri) return uri
   if (typeof window !== "undefined") return `${window.location.origin}/callback`
-  return "http://127.0.0.1:3000/callback"
+  return "http://127.0.0.1:3001/callback"
 }
 
 function generateRandomString(length: number): string {
@@ -68,7 +68,7 @@ export async function generateCodeChallenge(): Promise<{
 
 /** Redirect the user to Spotify to log in. Call this to start the auth flow. */
 export async function login(
-  scope = "user-read-private user-read-email playlist-read-private user-top-read",
+  scope = "user-read-private user-read-email playlist-read-private user-top-read"
 ): Promise<void> {
   const clientId = getClientId()
   const redirectUri = getRedirectUri()
@@ -109,7 +109,7 @@ export interface TokenResponse {
  */
 export async function exchangeCodeForTokens(
   code: string,
-  state: string,
+  state: string
 ): Promise<TokenResponse> {
   const clientId = getClientId()
   const redirectUri = getRedirectUri()
@@ -181,7 +181,7 @@ export async function getAccessToken(): Promise<string | null> {
 
 /** Refresh the access token using the stored refresh token. */
 export async function refreshAccessToken(
-  refreshToken: string,
+  refreshToken: string
 ): Promise<TokenResponse | null> {
   const clientId = getClientId()
   const res = await fetch(SPOTIFY_TOKEN_URL, {
