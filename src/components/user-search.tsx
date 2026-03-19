@@ -71,7 +71,7 @@ export function UserSearch({ onSearch, isSearching }: UserSearchProps) {
                 setUrl(e.target.value)
                 setError(null)
               }}
-              className="bg-secondary pl-10 pr-10 text-sm"
+              className="bg-secondary pl-10 pr-10"
             />
             {url && (
               <button
