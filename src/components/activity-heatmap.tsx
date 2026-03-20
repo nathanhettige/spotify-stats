@@ -264,7 +264,7 @@ export function ActivityHeatmap({
       </div>
 
       <ScrollArea className="w-full">
-        <div className="min-w-[700px] pb-2">
+        <div className="mx-auto w-fit min-w-[700px] pb-2">
           <div className="flex">
             {/* Day label column */}
             <div className="flex w-8 shrink-0 flex-col justify-around pt-5">

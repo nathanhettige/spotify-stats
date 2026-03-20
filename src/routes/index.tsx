@@ -290,9 +290,6 @@ function RecentDaysDetail({
 
   return (
     <div>
-      <p className="mb-5 text-xs font-medium text-muted-foreground">
-        Recent activity
-      </p>
       <div className="space-y-8">
         {days.map((dateStr) => {
           const entries = byDate[dateStr] ?? []
