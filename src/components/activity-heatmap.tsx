@@ -182,8 +182,10 @@ export function ActivityHeatmap({
   // ── Loading state ──────────────────────────────────────────────────────────
   if (isLoading) {
     const pct =
-      loadingProgress && loadingProgress.total > 0
-        ? Math.round((loadingProgress.loaded / loadingProgress.total) * 100)
+      loadingProgress && loadingProgress.totalTracks > 0
+        ? Math.round(
+            (loadingProgress.loadedTracks / loadingProgress.totalTracks) * 100
+          )
         : 0
 
     return (
@@ -199,9 +201,9 @@ export function ActivityHeatmap({
             <Progress value={pct} className="h-1.5" />
             <p className="text-xs text-muted-foreground">
               <span className="tabular-nums">
-                {loadingProgress.loaded} / {loadingProgress.total}
+                {loadingProgress.loadedTracks} / {loadingProgress.totalTracks}
               </span>{" "}
-              playlists scanned
+              tracks scanned
               {loadingProgress.currentPlaylist && (
                 <>
                   {" "}
