@@ -146,6 +146,12 @@ function App() {
                     onTogglePlaylist={togglePlaylist}
                     onDismiss={() => selectDate(null)}
                   />
+                ) : recentDays.length > 0 && !isLoadingContributions ? (
+                  <RecentDaysDetail
+                    days={recentDays}
+                    byDate={byDate}
+                    onSelectDate={selectDate}
+                  />
                 ) : undefined
               }
             />
@@ -255,6 +261,85 @@ function DayDetail({
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+interface RecentDaysDetailProps {
+  days: string[]
+  byDate: Record<string, Array<ContributionEntry>>
+  onSelectDate: (date: string) => void
+}
+
+function RecentDaysDetail({
+  days,
+  byDate,
+  onSelectDate,
+}: RecentDaysDetailProps) {
+  const [expandedPlaylists, setExpandedPlaylists] = useState<Set<string>>(
+    new Set()
+  )
+
+  function togglePlaylist(key: string) {
+    setExpandedPlaylists((prev) => {
+      const next = new Set(prev)
+      next.has(key) ? next.delete(key) : next.add(key)
+      return next
+    })
+  }
+
+  return (
+    <div>
+      <p className="mb-5 text-xs font-medium tracking-widest text-muted-foreground uppercase">
+        Recent activity
+      </p>
+      <div className="space-y-8">
+        {days.map((dateStr) => {
+          const entries = byDate[dateStr] ?? []
+          const contributionsByPlaylist = entries.reduce<
+            Record<string, Array<ContributionEntry>>
+          >((acc, entry) => {
+            ;(acc[entry.playlistName] ??= []).push(entry)
+            return acc
+          }, {})
+
+          return (
+            <div key={dateStr}>
+              {/* Date heading */}
+              <div className="mb-5 flex items-center gap-3">
+                <button
+                  onClick={() => onSelectDate(dateStr)}
+                  className="shrink-0 text-sm font-bold underline-offset-2 hover:underline"
+                >
+                  <DateHeading dateStr={dateStr} />
+                </button>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+
+              <div className="relative pl-9">
+                {/* Vertical timeline line */}
+                <div className="absolute top-0 bottom-2 left-[11px] w-px bg-border" />
+                <div className="space-y-6">
+                  {Object.entries(contributionsByPlaylist).map(
+                    ([playlistName, dayEntries]) => {
+                      const key = `${dateStr}:${playlistName}`
+                      return (
+                        <PlaylistGroup
+                          key={key}
+                          playlistName={playlistName}
+                          entries={dayEntries}
+                          expanded={expandedPlaylists.has(key)}
+                          onToggle={() => togglePlaylist(key)}
+                        />
+                      )
+                    }
+                  )}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
