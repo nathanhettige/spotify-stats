@@ -92,7 +92,7 @@ function App() {
 
   return (
     <div className="grid min-h-svh grid-rows-[1fr_auto] gap-4">
-      <main className="min-w-0 space-y-10 p-4">
+      <main className="mx-auto w-full max-w-225 min-w-0 space-y-10 p-4">
         <UserSearch
           onSearch={(userId) => {
             setSelectedUserId(userId)
@@ -266,7 +266,7 @@ function DayDetail({
 }
 
 interface RecentDaysDetailProps {
-  days: string[]
+  days: Array<string>
   byDate: Record<string, Array<ContributionEntry>>
   onSelectDate: (date: string) => void
 }
