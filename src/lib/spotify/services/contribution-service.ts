@@ -3,11 +3,15 @@
  * GitHub-style heatmap dataset and a per-day detail list.
  */
 
-import { queryOptions } from "@tanstack/react-query"
 import { getPlaylistItems } from "../api/playlists/items.ts"
 import { userPlaylistsQueryOptions } from "../api/users/playlists.ts"
-import type { ContributionData } from "@/components/ui/contribution-graph"
 import { getContext } from "@/integrations/tanstack-query/root-provider"
+
+interface ContributionData {
+  date: string
+  count: number
+  level: number
+}
 
 export interface ContributionEntry {
   /** ISO date-time string from added_at */
@@ -178,13 +182,3 @@ export async function getContributionData(
 
   return { heatmapData, byDate }
 }
-
-/** TanStack Query options for contribution data (no progress tracking). */
-export const contributionDataQueryOptions = (currentUserId: string) =>
-  queryOptions({
-    queryKey: ["spotify", "contributions", currentUserId] as const,
-    queryFn: () => getContributionData(currentUserId),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000,
-    enabled: !!currentUserId,
-  })
