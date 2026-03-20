@@ -122,17 +122,16 @@ export async function getContributionData(
   const playlists = allPlaylists.filter((p) => p.owner.id === userId)
 
   let loadedTracks = 0
-  const totalTracks = playlists.reduce(
-    (sum, p) => sum + (p.tracks?.total ?? 0),
-    0
-  )
+  const totalTracks = playlists.reduce((sum, p) => sum + p.tracks.total, 0)
 
   const byDate: Record<string, Array<ContributionEntry>> = {}
   let loaded = 0
   const total = playlists.length
+  const inFlight = new Set<string>()
 
   await Promise.allSettled(
     playlists.map(async (playlist) => {
+      inFlight.add(playlist.name)
       onProgress?.({
         loaded,
         total,
@@ -147,13 +146,14 @@ export async function getContributionData(
       } catch {
         // Skip playlists we can't read (e.g. 403 on private ones)
         loaded++
-        loadedTracks += playlist.tracks?.total ?? 0
+        loadedTracks += playlist.tracks.total
+        inFlight.delete(playlist.name)
         onProgress?.({
           loaded,
           total,
           loadedTracks,
           totalTracks,
-          currentPlaylist: playlist.name,
+          currentPlaylist: inFlight.values().next().value ?? "",
         })
         return
       }
@@ -191,12 +191,13 @@ export async function getContributionData(
 
       loaded++
       loadedTracks += items.length
+      inFlight.delete(playlist.name)
       onProgress?.({
         loaded,
         total,
         loadedTracks,
         totalTracks,
-        currentPlaylist: playlist.name,
+        currentPlaylist: inFlight.values().next().value ?? "",
       })
     })
   )

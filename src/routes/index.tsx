@@ -290,7 +290,7 @@ function RecentDaysDetail({
 
   return (
     <div>
-      <p className="mb-5 text-xs font-medium tracking-widest text-muted-foreground uppercase">
+      <p className="mb-5 text-xs font-medium text-muted-foreground">
         Recent activity
       </p>
       <div className="space-y-8">
@@ -327,6 +327,7 @@ function RecentDaysDetail({
                         <PlaylistGroup
                           key={key}
                           playlistName={playlistName}
+                          playlistUrl={dayEntries[0].playlistUrl}
                           entries={dayEntries}
                           expanded={expandedPlaylists.has(key)}
                           onToggle={() => togglePlaylist(key)}
