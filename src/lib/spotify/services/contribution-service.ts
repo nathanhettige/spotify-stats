@@ -37,6 +37,8 @@ export interface ContributionResult {
 export interface LoadingProgress {
   loaded: number
   total: number
+  loadedTracks: number
+  totalTracks: number
   currentPlaylist: string
 }
 
@@ -119,13 +121,25 @@ export async function getContributionData(
   // Only scan playlists the user owns (not ones they merely follow)
   const playlists = allPlaylists.filter((p) => p.owner.id === userId)
 
+  let loadedTracks = 0
+  const totalTracks = playlists.reduce(
+    (sum, p) => sum + (p.tracks?.total ?? 0),
+    0
+  )
+
   const byDate: Record<string, Array<ContributionEntry>> = {}
   let loaded = 0
   const total = playlists.length
 
   await Promise.allSettled(
     playlists.map(async (playlist) => {
-      onProgress?.({ loaded, total, currentPlaylist: playlist.name })
+      onProgress?.({
+        loaded,
+        total,
+        loadedTracks,
+        totalTracks,
+        currentPlaylist: playlist.name,
+      })
 
       let items
       try {
@@ -133,7 +147,14 @@ export async function getContributionData(
       } catch {
         // Skip playlists we can't read (e.g. 403 on private ones)
         loaded++
-        onProgress?.({ loaded, total, currentPlaylist: playlist.name })
+        loadedTracks += playlist.tracks?.total ?? 0
+        onProgress?.({
+          loaded,
+          total,
+          loadedTracks,
+          totalTracks,
+          currentPlaylist: playlist.name,
+        })
         return
       }
 
@@ -169,7 +190,14 @@ export async function getContributionData(
       }
 
       loaded++
-      onProgress?.({ loaded, total, currentPlaylist: playlist.name })
+      loadedTracks += items.length
+      onProgress?.({
+        loaded,
+        total,
+        loadedTracks,
+        totalTracks,
+        currentPlaylist: playlist.name,
+      })
     })
   )
 
