@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { ChevronDown, ChevronUp, ListMusic, Mic2, Music, X } from "lucide-react"
 import type { ContributionEntry } from "@/lib/spotify/services/contribution-service"
@@ -61,6 +61,10 @@ function App() {
   } = useContributionData(contributionUserId)
 
   const byDate = contributionData?.byDate ?? {}
+  const recentDays = useMemo(
+    () => Object.keys(byDate).sort().reverse().slice(0, 3),
+    [byDate]
+  )
   const selectedContributions: Array<ContributionEntry> = selectedDate
     ? (byDate[selectedDate] ?? [])
     : []
@@ -92,6 +96,7 @@ function App() {
         <UserSearch
           onSearch={(userId) => {
             setSelectedUserId(userId)
+            setHeatmapView("rolling")
             selectDate(null)
           }}
           isSearching={isFetching}
