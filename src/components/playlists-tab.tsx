@@ -2,8 +2,8 @@ import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Music2, Pin, Users } from "lucide-react"
 import { ShowAllButton } from "@/components/show-all-button"
-import type {EnrichedPlaylist} from "@/lib/spotify/services/playlist-service";
-import {  ownedPlaylistsQueryOptions } from "@/lib/spotify/services/playlist-service"
+import type { EnrichedPlaylist } from "@/lib/spotify/services/playlist-service"
+import { ownedPlaylistsQueryOptions } from "@/lib/spotify/services/playlist-service"
 
 const PINNED_KEY = "spotify-pinned-playlists"
 
@@ -23,9 +23,11 @@ interface PlaylistsTabProps {
 const INITIAL_COUNT = 6
 
 export function PlaylistsTab({ userId }: PlaylistsTabProps) {
-  const { data: playlists, isLoading, error } = useQuery(
-    ownedPlaylistsQueryOptions(userId),
-  )
+  const {
+    data: playlists,
+    isLoading,
+    error,
+  } = useQuery(ownedPlaylistsQueryOptions(userId))
   const [expanded, setExpanded] = useState(false)
 
   const pinnedIds = getPinnedIds()
@@ -67,7 +69,7 @@ export function PlaylistsTab({ userId }: PlaylistsTabProps) {
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid grid-cols-3 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {visible.map((playlist) => (
           <PlaylistCard
             key={playlist.id}
@@ -77,7 +79,11 @@ export function PlaylistsTab({ userId }: PlaylistsTabProps) {
         ))}
       </div>
       {sorted.length > INITIAL_COUNT && (
-        <ShowAllButton expanded={expanded} remaining={remaining} onToggle={() => setExpanded(!expanded)} />
+        <ShowAllButton
+          expanded={expanded}
+          remaining={remaining}
+          onToggle={() => setExpanded(!expanded)}
+        />
       )}
     </div>
   )
@@ -98,7 +104,7 @@ function PlaylistCard({ playlist, isPinned }: PlaylistCardProps) {
       rel="noreferrer"
       className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-colors hover:bg-muted/40"
     >
-      <div className="aspect-square w-full overflow-hidden">
+      <div className="aspect-square max-h-24 w-full overflow-hidden sm:max-h-none">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -112,7 +118,7 @@ function PlaylistCard({ playlist, isPinned }: PlaylistCardProps) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-1.5 p-3">
+      <div className="flex flex-1 flex-col gap-1.5 p-2 sm:p-3">
         <div className="flex items-center gap-1.5">
           <span className="truncate font-semibold">{playlist.name}</span>
           {isPinned && (
@@ -120,7 +126,9 @@ function PlaylistCard({ playlist, isPinned }: PlaylistCardProps) {
           )}
         </div>
         {playlist.description && (
-          <p className="line-clamp-2 text-xs text-muted-foreground">{playlist.description}</p>
+          <p className="line-clamp-2 text-xs text-muted-foreground">
+            {playlist.description}
+          </p>
         )}
         <div className="mt-auto flex items-center gap-1.5 text-xs text-muted-foreground">
           {playlist.followers > 0 && (

@@ -8,77 +8,60 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as Old_indxRouteImport } from './routes/old_indx'
-import { Route as CallbackRouteImport } from './routes/callback'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as rootRouteImport } from "./routes/__root"
+import { Route as CallbackRouteImport } from "./routes/callback"
+import { Route as IndexRouteImport } from "./routes/index"
 
-const Old_indxRoute = Old_indxRouteImport.update({
-  id: '/old_indx',
-  path: '/old_indx',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CallbackRoute = CallbackRouteImport.update({
-  id: '/callback',
-  path: '/callback',
+  id: "/callback",
+  path: "/callback",
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/callback': typeof CallbackRoute
-  '/old_indx': typeof Old_indxRoute
+  "/": typeof IndexRoute
+  "/callback": typeof CallbackRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/callback': typeof CallbackRoute
-  '/old_indx': typeof Old_indxRoute
+  "/": typeof IndexRoute
+  "/callback": typeof CallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/callback': typeof CallbackRoute
-  '/old_indx': typeof Old_indxRoute
+  "/": typeof IndexRoute
+  "/callback": typeof CallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/callback' | '/old_indx'
+  fullPaths: "/" | "/callback"
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/callback' | '/old_indx'
-  id: '__root__' | '/' | '/callback' | '/old_indx'
+  to: "/" | "/callback"
+  id: "__root__" | "/" | "/callback"
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CallbackRoute: typeof CallbackRoute
-  Old_indxRoute: typeof Old_indxRoute
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/old_indx': {
-      id: '/old_indx'
-      path: '/old_indx'
-      fullPath: '/old_indx'
-      preLoaderRoute: typeof Old_indxRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/callback': {
-      id: '/callback'
-      path: '/callback'
-      fullPath: '/callback'
+    "/callback": {
+      id: "/callback"
+      path: "/callback"
+      fullPath: "/callback"
       preLoaderRoute: typeof CallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
+    "/": {
+      id: "/"
+      path: "/"
+      fullPath: "/"
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -88,15 +71,14 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CallbackRoute: CallbackRoute,
-  Old_indxRoute: Old_indxRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
+import type { getRouter } from "./router.tsx"
+import type { createStart } from "@tanstack/react-start"
+declare module "@tanstack/react-start" {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
