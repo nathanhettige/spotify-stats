@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 import { Music2 } from "lucide-react"
 import type { TimeRange } from "@/lib/spotify/api/me/top-artists"
 import { topArtistsQueryOptions } from "@/lib/spotify/api/me/top-artists"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { ShowAllButton } from "@/components/show-all-button"
 
 const TIME_RANGES: Array<{ value: TimeRange; label: string }> = [
@@ -26,21 +26,15 @@ export function TopArtistsTab() {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
+      <div className="flex gap-1.5">
         {TIME_RANGES.map((range) => (
-          <Button
+          <Badge
             key={range.value}
-            variant={timeRange === range.value ? "default" : "ghost"}
-            size="sm"
+            variant={timeRange === range.value ? "active" : "outline"}
             onClick={() => handleTimeRangeChange(range.value)}
-            className={
-              timeRange === range.value
-                ? "bg-[#1DB954] text-black hover:bg-[#1DB954]/90"
-                : ""
-            }
           >
             {range.label}
-          </Button>
+          </Badge>
         ))}
       </div>
 
