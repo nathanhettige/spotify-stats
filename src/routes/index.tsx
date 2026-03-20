@@ -120,6 +120,31 @@ function App() {
               profileUrl={user.external_urls.spotify}
             />
 
+            <ActivityHeatmap
+              activityData={byDate}
+              view={heatmapView}
+              onViewChange={(v) => {
+                setHeatmapView(v)
+                selectDate(null)
+              }}
+              onDayClick={(date) => selectDate(date)}
+              selectedDate={selectedDate}
+              isLoading={isLoadingContributions}
+              loadingProgress={loadingProgress}
+              detailPanel={
+                selectedDate ? (
+                  <DayDetail
+                    selectedDate={selectedDate}
+                    selectedContributions={selectedContributions}
+                    contributionsByPlaylist={contributionsByPlaylist}
+                    expandedPlaylists={expandedPlaylists}
+                    onTogglePlaylist={togglePlaylist}
+                    onDismiss={() => selectDate(null)}
+                  />
+                ) : undefined
+              }
+            />
+
             <Tabs defaultValue="playlists">
               <TabsList className="w-full">
                 <TabsTrigger value="playlists">
@@ -156,31 +181,6 @@ function App() {
                 </TabsContent>
               )}
             </Tabs>
-
-            <ActivityHeatmap
-              activityData={byDate}
-              view={heatmapView}
-              onViewChange={(v) => {
-                setHeatmapView(v)
-                selectDate(null)
-              }}
-              onDayClick={(date) => selectDate(date)}
-              selectedDate={selectedDate}
-              isLoading={isLoadingContributions}
-              loadingProgress={loadingProgress}
-              detailPanel={
-                selectedDate ? (
-                  <DayDetail
-                    selectedDate={selectedDate}
-                    selectedContributions={selectedContributions}
-                    contributionsByPlaylist={contributionsByPlaylist}
-                    expandedPlaylists={expandedPlaylists}
-                    onTogglePlaylist={togglePlaylist}
-                    onDismiss={() => selectDate(null)}
-                  />
-                ) : undefined
-              }
-            />
           </>
         )}
       </main>
