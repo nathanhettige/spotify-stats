@@ -63,13 +63,13 @@ export interface PlaylistItemsResponse {
 /** Fetch a single page of playlist items. */
 export function getPlaylistItems(
   playlistId: string,
-  limit = 50,
-  offset = 0,
+  limit = 100,
+  offset = 0
 ): Promise<PlaylistItemsResponse> {
   const fields = encodeURIComponent(
-    "next,total,offset,items(added_at,added_by.id,track(id,name,type,artists(id,name,external_urls),album(id,name,images),external_urls))",
+    "next,total,offset,items(added_at,added_by.id,track(id,name,type,artists(id,name,external_urls),album(id,name,images),external_urls))"
   )
   return spotifyFetch<PlaylistItemsResponse>(
-    `/playlists/${playlistId}/items?limit=${limit}&offset=${offset}&fields=${fields}`,
+    `/playlists/${playlistId}/items?limit=${limit}&offset=${offset}&fields=${fields}`
   )
 }
