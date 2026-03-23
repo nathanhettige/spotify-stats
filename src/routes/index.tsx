@@ -19,6 +19,9 @@ import { useContributionData } from "@/lib/spotify/hooks/use-contribution-data"
 
 export const Route = createFileRoute("/")({
   component: IndexPage,
+  validateSearch: (search: Record<string, unknown>): { user?: string } => ({
+    ...(typeof search.user === "string" ? { user: search.user } : {}),
+  }),
 })
 
 function IndexPage() {
@@ -33,8 +36,9 @@ const MAX_VISIBLE = 4
 
 function App() {
   const { data: me } = useQuery(meQueryOptions)
+  const { user: selectedUserId } = Route.useSearch()
+  const navigate = Route.useNavigate()
 
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
   const [heatmapView, setHeatmapView] = useState<HeatmapView>("rolling")
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [expandedPlaylists, setExpandedPlaylists] = useState<Set<string>>(
@@ -95,11 +99,13 @@ function App() {
       <main className="mx-auto w-full max-w-225 min-w-0 space-y-10 p-4">
         <UserSearch
           onSearch={(userId) => {
-            setSelectedUserId(userId)
+            navigate({ search: { user: userId ?? undefined } })
             setHeatmapView("rolling")
             selectDate(null)
           }}
           isSearching={isFetching}
+          initialUserId={selectedUserId}
+          resolvedName={searchedUser?.display_name}
         />
 
         {isLoadingProfile && (
