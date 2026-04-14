@@ -15,6 +15,11 @@ import {
   login as spotifyLogin,
   logout as spotifyLogout,
 } from "@/lib/spotify/auth/oauth"
+import { topArtistsQueryOptions } from "@/lib/spotify/api/me/top-artists"
+import { topTracksQueryOptions } from "@/lib/spotify/api/me/top-tracks"
+import type { TimeRange } from "@/lib/spotify/api/me/top-artists"
+
+const TIME_RANGES: Array<TimeRange> = ["short_term", "medium_term", "long_term"]
 
 const TOKEN_STORAGE_KEY = "spotify_access_token"
 
@@ -78,6 +83,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryClient.removeQueries({ queryKey: meQueryOptions.queryKey })
     setStorageVersion((v) => v + 1)
   }, [queryClient])
+
+  useEffect(() => {
+    if (!state.isAuthenticated) return
+    for (const timeRange of TIME_RANGES) {
+      queryClient.prefetchQuery(topArtistsQueryOptions(timeRange))
+      queryClient.prefetchQuery(topTracksQueryOptions(timeRange))
+    }
+  }, [state.isAuthenticated, queryClient])
 
   const value: AuthContextValue = {
     ...state,
