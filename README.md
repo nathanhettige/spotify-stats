@@ -1,21 +1,23 @@
-# TanStack Start + shadcn/ui
+# Spotify Contributions
 
-This is a template for a new TanStack Start project with React, TypeScript, and shadcn/ui.
+A GitHub-contributions-style heatmap for your Spotify playlist activity. See when and what tracks you or any user added to playlists, visualized as a daily activity grid.
 
-## Adding components
+![Homepage](./public/screenshot.png)
 
-To add components to your app, run the following command:
+## Features
+
+- Activity heatmap showing tracks added to playlists per day
+- Click any day to see a timeline of added tracks, grouped by playlist
+- Browse your playlists, top artists, and top tracks
+- Search and view any Spotify user's public playlist contributions
+
+## Access
+
+This app uses the Spotify Developer API, which operates in development mode and only allows pre-approved users to log in. If you'd like access, reach out and I can add you.
+
+## Development
 
 ```bash
-npx shadcn@latest add button
-```
-
-This will place the ui components in the `components` directory.
-
-## Using components
-
-To use the components in your app, import them as follows:
-
-```tsx
-import { Button } from "@/components/ui/button";
+pnpm install
+pnpm dev
 ```
